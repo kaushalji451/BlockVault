@@ -5,17 +5,11 @@ import pinoHttp from "pino-http";
 import { errorMiddleware } from "./middleware/error.middleware.js";
 import { notFoundMiddleware } from "./middleware/not-found.middleware.js";
 import router from "./routes/index.js";
+import AuthRoute from "./modules/auth/auth.route.js";
 const app = express();
 
 // Middleware
 app.use(helmet());
-
-// error handling middleware
-app.use(errorMiddleware);
-
-// 404 not found middleware
-app.use(notFoundMiddleware);
-
 
 // CORS configuration
 app.use(
@@ -32,6 +26,16 @@ app.use(express.urlencoded({ extended: true }));
 app.use(pinoHttp.default({ level: process.env.LOG_LEVEL || "info" }));
 
 // Health check endpoint
-app.use("/api/v1",router);
+app.use("/api/v1", router);
+
+// Authentication routes
+app.use("/api/v1/auth", AuthRoute);
+
+
+// 404 not found middleware
+app.use(notFoundMiddleware);
+
+// error handling middleware
+app.use(errorMiddleware);
 
 export default app;

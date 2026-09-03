@@ -21,7 +21,7 @@
     "url": "git+https://github.com/kaushalji451/BlockVault.git"
   },
   "keywords": [],
-  "author": "",
+  "author": ".",
   "license": "ISC",
   "type": "commonjs",
   "bugs": {
