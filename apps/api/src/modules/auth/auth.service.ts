@@ -1,6 +1,9 @@
 import { UserRepository } from "./repositories/user.repository.js";
 import { PasswordService } from "./services/password.service.js";
+import { OtpService } from "./services/otp.service.js";
+import { EmailService } from "./services/email.service.js";
 import { AppError } from "../../shared/errors/AppError.js";
+import { success } from "zod";
 
 export interface SignupData {
     username: string;
@@ -12,10 +15,14 @@ export class AuthService {
 
     private userRepository: UserRepository;
     private passwordService: PasswordService;
+    private otpService: OtpService;
+    private emailService: EmailService;
 
     constructor() {
         this.userRepository = new UserRepository();
         this.passwordService = new PasswordService();
+        this.otpService = new OtpService();
+        this.emailService = new EmailService();
     }
 
     async signup(data: SignupData) {
@@ -49,9 +56,64 @@ export class AuthService {
 
         console.log("User created.");
 
+        // Step 4: Generate and store OTP for email verification
+        const verificationOtp = await this.otpService.createVerificationOtp(user.id);
+
+        console.log("Verification OTP generated and stored.");
+
+        // Step 5: Send the OTP to the user's email
+        await this.emailService.sendVerifiationOtp(
+            email,
+            verificationOtp.otp
+        );
+
         return {
-            message: "signup process started"
+            success: true,
+            message:
+                "Verification OTP sent to your email.",
+        }
+    }
+
+    async verifyEmail(data: { email: string, otp: string }) {
+        const { email, otp } = data;
+
+        // Step 1: Find the user by email
+        const user = await this.userRepository.findByEmail(email);
+
+        if (!user) {
+            throw new AppError(
+                "User not found",
+                404
+            );
         }
 
+        // 2 check the email is already verified
+        if (user.isEmailVerified) {
+            throw new AppError(
+                "Email is already verified",
+                400
+            );
+        }
+
+        // Step 2: Verify the OTP
+        const isOtpValid = await this.otpService.verifyOtp(
+            user.id,
+            otp
+        );
+
+        if (!isOtpValid) {
+            throw new AppError(
+                "Invalid or expired OTP",
+                400
+            );
+        }
+
+        // Step 3: Update the user's email verification status
+        await this.userRepository.updateEmailVerified(user.id, true);
+
+        return {
+            success: true,
+            message: "Email verified successfully.",
+        };
     }
 }

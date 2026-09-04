@@ -21,3 +21,24 @@ export const signupValidatior = (req: Request, res: Response, next: NextFunction
     }
 
 }
+
+export const verifyEmailValidator = (req: Request, res: Response, next: NextFunction) => {
+    const { email, otp } = req.body;
+
+    const schema = z.object({
+        email: z.string().email({ message: "Invalid email address" }),
+        otp: z.string().length(6, { message: "OTP must be 6 characters long" }),
+    });
+
+    try {
+        schema.parse({ email, otp });
+        next();
+    } catch (error) {
+        if (error instanceof z.ZodError) {
+            return res.status(400).json({ success: false, message: error.message });
+        }
+        return res.status(500).json({ success: false, message: "Internal server error" });
+    }
+
+    next();
+}
