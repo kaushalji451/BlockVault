@@ -3,7 +3,6 @@ import { PasswordService } from "./services/password.service.js";
 import { OtpService } from "./services/otp.service.js";
 import { EmailService } from "./services/email.service.js";
 import { AppError } from "../../shared/errors/AppError.js";
-import { success } from "zod";
 
 export interface SignupData {
     username: string;
@@ -101,15 +100,8 @@ export class AuthService {
             otp
         );
 
-        if (!isOtpValid) {
-            throw new AppError(
-                "Invalid or expired OTP",
-                400
-            );
-        }
-
         // Step 3: Update the user's email verification status
-        await this.userRepository.updateEmailVerified(user.id, true);
+        await this.userRepository.updateEmailVerified(user.id);
 
         return {
             success: true,

@@ -74,7 +74,7 @@ export class UserRepository {
         return result.rows[0] || null;
     }
 
-    async updateEmailVarifide(userId: string) {
+    async updateEmailVerified(userId: string) {
         // logic to update the email verified status of a user in the database
         const result = await postgres.query(
             `
