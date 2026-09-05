@@ -17,7 +17,7 @@ export class OtpRepository {
             otp_hash,
             expires_at
             )
-            VALUES ($1, $2, #3)
+            VALUES ($1, $2, $3)
             RETURNING 
             id,
             user_id,

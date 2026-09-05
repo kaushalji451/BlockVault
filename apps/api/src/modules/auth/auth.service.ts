@@ -2,13 +2,9 @@ import { UserRepository } from "./repositories/user.repository.js";
 import { PasswordService } from "./services/password.service.js";
 import { OtpService } from "./services/otp.service.js";
 import { EmailService } from "./services/email.service.js";
+import { JwtService } from "./services/jwt.service.js";
+import type { SignupData } from "./types/signup.types.js";
 import { AppError } from "../../shared/errors/AppError.js";
-
-export interface SignupData {
-    username: string;
-    email: string;
-    password: string;
-}
 
 export class AuthService {
 
@@ -16,12 +12,14 @@ export class AuthService {
     private passwordService: PasswordService;
     private otpService: OtpService;
     private emailService: EmailService;
+    private jwtService: JwtService;
 
     constructor() {
         this.userRepository = new UserRepository();
         this.passwordService = new PasswordService();
         this.otpService = new OtpService();
         this.emailService = new EmailService();
+        this.jwtService = new JwtService();
     }
 
     async signup(data: SignupData) {
@@ -95,7 +93,7 @@ export class AuthService {
         }
 
         // Step 2: Verify the OTP
-        const isOtpValid = await this.otpService.verifyOtp(
+        await this.otpService.verifyOtp(
             user.id,
             otp
         );
@@ -103,9 +101,17 @@ export class AuthService {
         // Step 3: Update the user's email verification status
         await this.userRepository.updateEmailVerified(user.id);
 
+        // jwt token genration 
+        const accessToken =
+            this.jwtService.genrateAccessToken(
+                user.id,
+                user.email
+            );
+
         return {
             success: true,
             message: "Email verified successfully.",
+            accessToken
         };
     }
 }
