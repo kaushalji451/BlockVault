@@ -64,6 +64,8 @@ export class AuthService {
             verificationOtp.otp
         );
 
+        console.log("Otp send successfully.");
+
         return {
             success: true,
             message:

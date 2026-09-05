@@ -44,7 +44,7 @@ export class OtpService {
         userId: string,
         otp: string
     ): Promise<void> {
-
+        console.log("verifying otp");
         const storedOtp = await this.otpRepository.findActiveOtp(userId);
 
         if (!storedOtp) {

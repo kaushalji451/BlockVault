@@ -9,6 +9,7 @@ export interface CreateUserData {
 export class UserRepository {
 
     async findByEmail(email: string) {
+        console.log("finding by email");
         // logic to find user by email in the database
         const result = await postgres.query(
             `
@@ -76,6 +77,7 @@ export class UserRepository {
 
     async updateEmailVerified(userId: string) {
         // logic to update the email verified status of a user in the database
+        console.log("updating email");
         const result = await postgres.query(
             `
             UPDATE users

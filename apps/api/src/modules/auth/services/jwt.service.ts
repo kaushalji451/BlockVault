@@ -1,24 +1,26 @@
 import Jwt, { type SignOptions } from "jsonwebtoken";
 import { requireEnv } from "../../../config/env.js";
 import type { AccessTokenPayload } from "../types/jwt.types.js";
+import type { StringValue } from "ms";
 
 export class JwtService {
     private readonly accessSecret: string;
-    private readonly accessExpiresIn;
+    private readonly accessExpiresIn: StringValue;
 
     constructor() {
         this.accessSecret = requireEnv(
             "JWT_ACCESS_SECRET"
         );
 
-        this.accessExpiresIn = Number(
-            requireEnv(
-                "JWT_ACCESS_EXPIRES_IN"
-            )
-        );
+        this.accessExpiresIn = requireEnv(
+            "JWT_ACCESS_EXPIRES_IN"
+
+        ) as StringValue;
     }
 
     genrateAccessToken(userId: string, email: string) {
+
+        console.log("token genrating");
 
         const payload: AccessTokenPayload = {
             userId,

@@ -6,8 +6,6 @@ import { signup } from './auth.controllder.js';
 import { verifyEmailValidator } from './auth.validator.js';
 import {verifyEmail} from './auth.controllder.js';
 
-import router from '../../routes/index.js';
-
 const AuthRoute = Router();
 
 // Signup route

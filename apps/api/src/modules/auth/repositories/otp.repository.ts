@@ -36,6 +36,7 @@ export class OtpRepository {
     async findActiveOtp(userId: string) {
         const result = await postgres.query(
             `
+            SELECT
             id,
             user_id,
             otp_hash,

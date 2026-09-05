@@ -12,7 +12,7 @@ export const signupValidatior = (req: Request, res: Response, next: NextFunction
 
     try {
         schema.parse({ username, email, password });
-        next();
+        return next();
     } catch (error) {
         if (error instanceof z.ZodError) {
             return res.status(400).json({ success: false, message: error.message });
@@ -32,13 +32,11 @@ export const verifyEmailValidator = (req: Request, res: Response, next: NextFunc
 
     try {
         schema.parse({ email, otp });
-        next();
+        return next();
     } catch (error) {
         if (error instanceof z.ZodError) {
             return res.status(400).json({ success: false, message: error.message });
         }
         return res.status(500).json({ success: false, message: "Internal server error" });
     }
-
-    next();
 }

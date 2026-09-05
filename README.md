@@ -9,3 +9,4 @@ to connect with docker container - docker exec -it dfs-postgres  psql -U postgre
 to stop all runnig container - docker stop $(docker ps -q)
 to add a new table in existing volume infra_postgres - docker exec -i dfs-postgres psql -U postgres -d distributed_storage < database/migrations/002_create_otp_verifications.sql
 to list all tabels - docker exec -it dfs-postgres psql -U postgres -d distributed_storage -c "\dt"
+to remove all the data  from the tabels - docker exec -it dfs-postgres psql -U postgres -d distributed_storage -c "TRUNCATE TABLE email_verification_otps, otp_verifications, users RESTART IDENTITY CASCADE;"

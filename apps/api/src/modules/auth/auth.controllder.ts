@@ -1,11 +1,12 @@
 import type { Request, Response } from "express";
 import { AuthService } from "./auth.service.js";
 import type { SignupData } from "./types/signup.types.js";
+import { asyncHandler } from "../../middleware/async-handler.js";
 
 const authService = new AuthService();
 
 
-export const signup = (
+export const signup = asyncHandler(async (
     req: Request,
     res: Response,
     next: Function
@@ -26,9 +27,9 @@ export const signup = (
         next(error);
     }
 
-};
+});
 
-export const verifyEmail = (
+export const verifyEmail = async (
     req: Request,
     res: Response,
     next: Function
@@ -36,7 +37,7 @@ export const verifyEmail = (
     try {
         const { email, otp } = req.body;
 
-        const result = authService.verifyEmail({
+        const result = await authService.verifyEmail({
             email,
             otp
         });
