@@ -1,6 +1,5 @@
 import nodemailer from "nodemailer";
 import { requireEnv } from "../../../config/env.js";
-import { verificationOtpTemplate } from "../templates/verification-otp.template.js";
 import { AppError } from "../../../shared/errors/AppError.js";
 
 export class EmailService {
@@ -19,9 +18,11 @@ export class EmailService {
         })
     }
 
-    async sendVerifiationOtp(
+    async sendOtpEmail(
         email: string,
-        otp: string
+        otp: string,
+        subject: string,
+        template: (otp: string) => string
     ) {
         try {
             console.log("Arrived to send the OTP");
@@ -29,16 +30,16 @@ export class EmailService {
             const info = await this.transporter.sendMail({
                 from: requireEnv("SMTP_FROM"),
                 to: email,
-                subject: "BlockVault Email Verification",
-                html: verificationOtpTemplate(otp)
+                subject,
+                html: template(otp)
             });
 
             console.log("OTP email sent successfully:", info.messageId);
 
         } catch (error) {
-            console.error("Failed to send verification OTP email:", error);
+            console.error("Failed to send OTP email:", error);
 
-            throw new AppError("Failed to send verification OTP email.", 500);
+            throw new AppError("Failed to send OTP email.", 500);
         }
     }
 

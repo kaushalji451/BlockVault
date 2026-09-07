@@ -1,7 +1,8 @@
 import { postgres } from "../../../db/postgres.js";
-
+import { OtpPurpose } from "../types/otp.types.js";
 export interface CreateOtpData {
     userId: string;
+    purpose: OtpPurpose;
     otpHash: string;
     expiresAt: Date;
 }
@@ -15,9 +16,10 @@ export class OtpRepository {
             INSERT INTO email_verification_otps (
             user_id,
             otp_hash,
+            purpose,
             expires_at
             )
-            VALUES ($1, $2, $3)
+            VALUES ($1, $2, $3, $4)
             RETURNING 
             id,
             user_id,
@@ -26,20 +28,24 @@ export class OtpRepository {
             used_at,
             created_at
             `,
-            [data.userId, data.otpHash, data.expiresAt]
+            [data.userId, data.otpHash, data.purpose, data.expiresAt]
         );
 
         return result.rows[0];
     }
 
 
-    async findActiveOtp(userId: string) {
+    async findActiveOtp(
+        userId: string,
+        purpose: string
+    ) {
         const result = await postgres.query(
             `
             SELECT
             id,
             user_id,
             otp_hash,
+            purpose,
             expires_at,
             attempts,
             used_at,
@@ -66,7 +72,7 @@ export class OtpRepository {
         );
     }
 
-    async invalidateOtp(otpId: string): Promise<void> {
+    async invalidateOtp(otpId: string, purpose: OtpPurpose): Promise<void> {
         await postgres.query(
             `
             UPDATE email_verification_otps

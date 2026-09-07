@@ -95,4 +95,24 @@ export class UserRepository {
         );
         return result.rows[0] || null;
     }
+
+    async updatePassword(userId: string, hashedPassword: string) {
+        // logic to update the email verified status of a user in the database
+        console.log("updating new Password");
+        const result = await postgres.query(
+            `
+            UPDATE users
+            SET 
+                password_hash = $2,
+                updated_at = NOW()
+            WHERE id = $1
+            RETURNING
+                id,
+                username,
+                email
+            `,
+            [userId, hashedPassword]
+        );
+        return result.rows[0] || null;
+    }
 }

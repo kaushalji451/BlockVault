@@ -1,6 +1,6 @@
 import Jwt, { type SignOptions } from "jsonwebtoken";
 import { requireEnv } from "../../../config/env.js";
-import type { AccessTokenPayload } from "../types/jwt.types.js";
+import type { AccessTokenPayload, PasswordResetPayload } from "../types/jwt.types.js";
 import type { StringValue } from "ms";
 
 export class JwtService {
@@ -38,11 +38,38 @@ export class JwtService {
 
     }
 
+    genratePasswordResetToken(userId: string, email: string) {
+
+        console.log("token genrating");
+
+        const payload: AccessTokenPayload = {
+            userId,
+            email
+        }
+        const options: SignOptions = {
+            expiresIn: this.accessExpiresIn,
+        };
+
+        return Jwt.sign(
+            payload,
+            this.accessSecret,
+            options
+        );
+
+    }
+
     verifyAccessToken(token: string) {
         return Jwt.verify(
             token,
             this.accessSecret
         );
+    }
+
+    verifyPasswordResetToken(token: string): PasswordResetPayload {
+        return Jwt.verify(
+            token,
+            this.accessSecret
+        ) as PasswordResetPayload;
     }
 
     decodeToken(token: string) {

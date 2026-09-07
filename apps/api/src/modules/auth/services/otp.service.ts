@@ -2,6 +2,7 @@ import crypto from 'crypto';
 import bcrypt from 'bcrypt';
 import { OtpRepository } from '../repositories/otp.repository.js';
 import { AppError } from '../../../shared/errors/AppError.js';
+import { OtpPurpose } from '../types/otp.types.js';
 
 export class OtpService {
 
@@ -24,13 +25,14 @@ export class OtpService {
         return hashedOtp;
     }
 
-    async createVerificationOtp(userId: string) {
+    async createVerificationOtp(userId: string, purpose: OtpPurpose) {
         const otp = this.genrateOtp();
         const otpHash = await this.hashOtp(otp);
         const expiresAt = new Date(Date.now() + this.otpLifetimeMinutes * 60 * 1000);
 
         await this.otpRepository.createOtp({
             userId,
+            purpose,
             otpHash,
             expiresAt
         })
@@ -42,10 +44,11 @@ export class OtpService {
 
     async verifyOtp(
         userId: string,
-        otp: string
+        otp: string,
+        purpose: OtpPurpose
     ): Promise<void> {
         console.log("verifying otp");
-        const storedOtp = await this.otpRepository.findActiveOtp(userId);
+        const storedOtp = await this.otpRepository.findActiveOtp(userId, purpose);
 
         if (!storedOtp) {
             throw new AppError(
@@ -93,7 +96,8 @@ export class OtpService {
         }
         // OTP is valid
         await this.otpRepository.invalidateOtp(
-            storedOtp.id
+            storedOtp.id,
+            purpose
         );
     }
 

@@ -1,3 +1,5 @@
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+
 CREATE TABLE email_verification_otps (
     id BIGSERIAL PRIMARY KEY,
 
@@ -5,6 +7,8 @@ CREATE TABLE email_verification_otps (
 
     otp_hash TEXT NOT NULL,
 
+    purpose VARCHAR(50) Not NULL,
+    
     expires_at TIMESTAMPTZ NOT NULL,
 
     attempts INTEGER NOT NULL DEFAULT 0,
