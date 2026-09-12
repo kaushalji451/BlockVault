@@ -101,4 +101,3 @@ export const resetPassword = asyncHandler(
         return res.status(200).json(result);
     }
 )
-
